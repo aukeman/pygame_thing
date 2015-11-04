@@ -18,8 +18,8 @@ pygame.init()
 #size = pygame.display.list_modes()[0] #(3200, 1800)
 size=(1600, 900)
 
-screen = pygame.display.set_mode(size) #, pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE)
-#screen.set_alpha(None)
+screen = pygame.display.set_mode(size, pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE)
+screen.set_alpha(None)
 pygame.display.set_caption("My Game")
 # Loop until the user clicks the close button.
 done = False
