@@ -40,10 +40,9 @@ speed_pps=60.0
 
 coords=[10.0,10.0]
 
-anim=Animation()
-anim.add_frame( Animation.Frame( 1000, [ 0, 16, 16, 16] ) )
-anim.add_frame( Animation.Frame( 1000, [16, 16, 16, 16] ) )
-anim.add_frame( Animation.Frame( 1000, [32, 16, 16, 16] ) )
+anim=Animation( [Animation.Frame(1000, [ 0, 16, 16, 16]),
+                 Animation.Frame(1000, [16, 16, 16, 16]),
+                 Animation.Frame(1000, [32, 16, 16, 16]) ])
 
 anim.activate()
 
