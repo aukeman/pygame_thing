@@ -62,7 +62,7 @@ while not done:
     # --- Drawing code should go here
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
-    surf.fill(RED)
+#    surf.fill(RED)
     
     # for i in range(0, 13):
     #     for j in range(0,10):
