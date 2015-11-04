@@ -28,9 +28,9 @@ class Animation:
     def get_frame(self):
         time=(pygame.time.get_ticks() - self.activation_time) % self.loop_duration
 
-        if 0 < self.frame_index and time < self.frame_transition_times[0]:
+        if time < self.frame_transition_times[self.frame_index]:
             self._reset_frame_index()
-        elif self.frame_transition_times[self.frame_index] < time:
+        while self.frame_transition_times[self.frame_index] < time:
             self._increment_frame_index()
         return self.frames[self.frame_index].rect
 
