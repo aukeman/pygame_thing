@@ -1,0 +1,11 @@
+class Controls:
+
+    def __init__(self):
+        self.update()
+
+    def update(self, **kwargs):
+        self.left=kwargs.get('left', False)
+        self.right=kwargs.get('right', False)
+        self.up=kwargs.get('up', False)
+        self.down=kwargs.get('down', False)
+        

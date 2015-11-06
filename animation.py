@@ -7,7 +7,7 @@ class Animation:
             self.duration=duration
             self.rect=rect
 
-    def __init__(self, frames=[]):
+    def __init__(self, *frames):
         self.frames=[]
         self.activation_timestamp=0
         self.frame_index=0
