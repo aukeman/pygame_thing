@@ -25,7 +25,7 @@ class Image:
         if flags & Image.FLIPPED_V:
             self.flipped_v=pygame.transform.flip(self.surface,False,True)
 
-        if flags & Image.FLIPPED_BOTH:
+        if flags == Image.FLIPPED_BOTH:
             self.flipped_hv=pygame.transform.flip(self.surface,True,True)
 
         self.src_rect_buffer=[0,0,0,0]
@@ -36,22 +36,22 @@ class Image:
             
     def blit(self, src_rect, x, y, dest_surf, flags=NONE):
         if flags == Image.FLIPPED_H and self.flipped_h is not None:
-            self.src_rect_buffer[0] = self.width-src_rect[0]
+            self.src_rect_buffer[0] = self.width-src_rect[0]-src_rect[2]
             self.src_rect_buffer[1] = src_rect[1]
-            self.src_rect_buffer[2] = -src_rect[2]
+            self.src_rect_buffer[2] = src_rect[2]
             self.src_rect_buffer[3] = src_rect[3]
             src_surf=self.flipped_h
         elif flags == Image.FLIPPED_V and self.flipped_v is not None:
             self.src_rect_buffer[0] = src_rect[0]
-            self.src_rect_buffer[1] = self.height-src_rect[1]
+            self.src_rect_buffer[1] = self.height-src_rect[1]-src_rect[3]
             self.src_rect_buffer[2] = src_rect[2]
-            self.src_rect_buffer[3] = -src_rect[3]
+            self.src_rect_buffer[3] = src_rect[3]
             src_surf=self.flipped_v
         elif flags == Image.FLIPPED_BOTH and self.flipped_hv is not None:
-            self.src_rect_buffer[0] = self.width-src_rect[0]
-            self.src_rect_buffer[1] = self.height-src_rect[1]
-            self.src_rect_buffer[2] = -src_rect[2]
-            self.src_rect_buffer[3] = -src_rect[3]
+            self.src_rect_buffer[0] = self.width-src_rect[0]-src_rect[2]
+            self.src_rect_buffer[1] = self.height-src_rect[1]-src_rect[3]
+            self.src_rect_buffer[2] = src_rect[2]
+            self.src_rect_buffer[3] = src_rect[3]
             src_surf=self.flipped_hv
         else:
             self.src_rect_buffer[0] = src_rect[0]

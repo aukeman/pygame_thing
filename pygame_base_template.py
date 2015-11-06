@@ -93,7 +93,7 @@ while not done:
         for j in range(0,10):
             tiles.blit([0,0,16,16], i*16, j*16, surf)
 
-    mario.blit(anim.get_frame(), coords[0], coords[1], surf, Image.FLIPPED_BOTH)
+    mario.blit(anim.get_frame(), coords[0], coords[1], surf)
 
     text = font.render('%05.1f % 8.6f % 5.3f' % (clock.get_fps(), dt, dx), False, WHITE)
     surf.blit(text, [10, 10])
