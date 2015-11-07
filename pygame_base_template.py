@@ -44,13 +44,19 @@ coords=[10.0,10.0]
 
 w=16
 h=16
-anim=Animation( Animation.Frame(100, [1*w, 0*h, w, h]),
-                Animation.Frame(100, [2*w, 0*h, w, h]),
-                Animation.Frame(100, [3*w, 0*h, w, h]) )
-anim.activate()
+walking=Animation( Animation.Frame(100, [1*w, 0*h, w, h]),
+                   Animation.Frame(100, [2*w, 0*h, w, h]),
+                   Animation.Frame(100, [3*w, 0*h, w, h]) )
+walking.activate()
 
+standing=Animation( Animation.Frame(100, [0*w, 0*h, w, h]) )
+standing.activate()
 
 controls=Controls()
+
+current_anim=standing
+facing_right=True
+blit_flags=Image.NONE
 
 # -------- Main Program Loop -----------
 while not done:
@@ -71,6 +77,27 @@ while not done:
                      right=keys[pygame.K_RIGHT],
                      up=keys[pygame.K_UP],
                      down=keys[pygame.K_DOWN] )
+
+    if current_anim==standing and (controls.left or 
+                                   controls.right or 
+                                   controls.up or 
+                                   controls.down):
+        current_anim=walking
+        current_anim.activate()
+    elif current_anim==walking and not (controls.left or 
+                                        controls.right or 
+                                        controls.up or 
+                                        controls.down):
+        current_anim=standing
+        current_anim.activate()
+
+
+    if facing_right and controls.left:
+        facing_right=False
+        blit_flags=Image.FLIPPED_H
+    elif not facing_right and controls.right:
+        facing_right=True
+        blit_flags=Image.NONE
 
     if controls.left:
         coords[0] -= dx
@@ -93,7 +120,7 @@ while not done:
         for j in range(0,10):
             tiles.blit([0,0,16,16], i*16, j*16, surf)
 
-    mario.blit(anim.get_frame(), coords[0], coords[1], surf)
+    mario.blit(current_anim.get_frame(), coords[0], coords[1], surf, blit_flags)
 
     text = font.render('%05.1f % 8.6f % 5.3f' % (clock.get_fps(), dt, dx), False, WHITE)
     surf.blit(text, [10, 10])
