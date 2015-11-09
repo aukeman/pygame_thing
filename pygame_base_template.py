@@ -10,6 +10,11 @@ import pygame
 from animation import Animation
 from controls import Controls
 from image import Image
+from collision import rectangles_overlap
+
+
+
+
 
 # Define some colors
 BLACK = (0, 0, 0)
@@ -110,20 +115,34 @@ while not done:
         coords[1] += dy
 
 
+
     # --- Game logic should go here
     # --- Drawing code should go here
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
 #    surf.fill(RED)
+
+    overlap=False
     
     for i in range(0, 13):
         for j in range(0,10):
-            tiles.blit([0,0,16,16], i*16, j*16, surf)
+            if i == 0 or i == 12 or j == 0 or j == 9:
+                tiles.blit([0,0,16,16], i*16, j*16, surf)
+
+                if rectangles_overlap(coords+[16, 16], [i*16, j*16, 16, 16]):
+                    overlap=True
+            else:
+                tiles.blit([16,0,16,16], i*16, j*16, surf)
 
     mario.blit(current_anim.get_frame(), coords[0], coords[1], surf, blit_flags)
 
-    text = font.render('%05.1f % 8.6f % 5.3f' % (clock.get_fps(), dt, dx), False, WHITE)
-    surf.blit(text, [10, 10])
+    if overlap:
+        text=font.render("overlap!", True, WHITE)
+        surf.blit(text, [10, 10])
+
+
+#    text = font.render('%05.1f % 8.6f % 5.3f' % (clock.get_fps(), dt, dx), False, WHITE)
+#    surf.blit(text, [10, 10])
 
     pygame.transform.scale(surf, size, screen)
 
