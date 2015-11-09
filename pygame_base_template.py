@@ -114,8 +114,6 @@ while not done:
     elif controls.down:
         coords[1] += dy
 
-
-
     # --- Game logic should go here
     # --- Drawing code should go here
     # First, clear the screen to white. Don't put other drawing commands
