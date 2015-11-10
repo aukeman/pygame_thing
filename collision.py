@@ -7,7 +7,6 @@ rect_buffer=[pygame.Rect(0,0,0,0) for i in range(0,10)]
 line_buffer=[Line(0,0,0,0) for i in range(0,10)]
 point_buffer=[Point(0,0) for i in range(0,10)]
 
-
 def rectangles_overlap( a, b ):
     local_a=rect_buffer[0]
     local_b=rect_buffer[1]
@@ -144,6 +143,8 @@ def line_intersects_rectangle(line, rect, intersection):
                 result=True
                 _copy_point(current_intersection, intersection)
 
+            side_idx+=1
+
         if not result:
             origin=point_buffer[1]
             origin.x=line.x1
@@ -155,8 +156,39 @@ def line_intersects_rectangle(line, rect, intersection):
 
     return result;
                 
-def moving_rectangle_intersects_rectangle(a, a_motion, b, distance_until_collision):
-    return False
+def distance_until_rectangles_intersect(a, a_motion, b):
+    result=999999.9
+
+    amx=a_motion.x
+    amy=a_motion.y
+    
+    ax=a.x
+    ay=a.y
+    w=a.width
+    h=a.height
+
+    line_buffer[0].set( ax,   ay,   ax+amx,   ay+amy )
+    line_buffer[1].set( ax+w, ay,   ax+w+amx, ay+amy )
+    line_buffer[2].set( ax,   ay+h, ax+amx,   ay+h+amy )
+    line_buffer[3].set( ax+w, ay+h, ax+w+amx, ay+h+amy )
+    
+    collision_point=point_buffer[0]
+    _clear_point(collision_point)
+
+    idx=0
+    while idx < 4:
+        if line_intersects_rectangle(line_buffer[idx], b, collision_point):
+            result=True
+            point_buffer[1].set(line_buffer[idx].x1, line_buffer[idx].y1)
+            d_sqrd=point_buffer[1].distance_squared(collision_point)
+            if d_sqrd < result:
+                result = d_sqrd
+        idx+=1
+
+    if result < 999999.9:
+        return math.sqrt(result)
+    else:
+        return None
 
 def _parallel_line_collision(a, b, intersection):
     a1=point_buffer[0]
