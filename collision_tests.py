@@ -50,12 +50,31 @@ class CollisionTest(unittest.TestCase):
         l=Line(0,0,10,10)
         self.assertEqual(point_on_line(p,l), True)
 
+    def test_endpoint2_on_line(self):
+        p=Point(10,10)
+        l=Line(0,0,10,10)
+        self.assertEqual(point_on_line(p,l), True)
+        
+    def test_midpoint_on_line(self):
+        p=Point(5,5)
+        l=Line(0,0,10,10)
+        self.assertEqual(point_on_line(p,l), True)
 
-    def _test_stationary_rectangle_does_not_intersect(self):
-        a=[0,0,10,10]
-        v=[0,0]
-        b=[20,0,10,10]
-        self.assertEqual(distance_until_rectangles_intersect(a,v,b), None)
+    def test_midpoint_on_horizontal_line(self):
+        p=Point(5,0)
+        l=Line(0,0,10,0)
+        self.assertEqual(point_on_line(p,l), True)
+
+    def test_midpoint_on_vertical_line(self):
+        p=Point(0,5)
+        l=Line(0,0,0,10)
+        self.assertEqual(point_on_line(p,l), True)
+
+    def test_midpoint_on_reversed_line(self):
+        p=Point(5,5)
+        l=Line(10,10,0,0)
+        self.assertEqual(point_on_line(p,l), True)
+    
 
 
 if __name__ == "__main__":
