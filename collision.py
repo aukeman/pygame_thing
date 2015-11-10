@@ -46,9 +46,7 @@ def point_on_line( point, line ):
 def line_intersects_line(a, b, intersection):
     result=False
 
-    if intersection is not None:
-        intersection[0]=0
-        intersection[1]=0
+    _clear_point(intersection)
 
     slope_a=a.slope()
     slope_b=b.slope()
@@ -92,6 +90,74 @@ def line_intersects_line(a, b, intersection):
 
     return result
 
+def line_intersects_rectangle(line, rect, intersection):
+    result=False
+
+    line_bbox=rect_buffer[0]
+    line_bbox.x=line.x1
+    line_bbox.y=line.y1
+    line_bbox.width=line.x2-line.x1
+    line_bbox.height=line.y2-line.y1
+
+    _clear_point(intersection)
+        
+    if rectangles_overlap(rect, line_bbox):
+        side_1=line_buffer[0]
+        side_1.x1=rect.x+rect.width 
+        side_1.y1=rect.y
+        side_1.x2=rect.x
+        side_1.y2=rect.y
+
+        side_2=line_buffer[1]
+        side_2.x1=rect.x+rect.width 
+        side_2.y1=rect.y
+        side_2.x2=rect.x+rect.width
+        side_2.y2=rect.y+rect.height
+
+        side_3=line_buffer[2]
+        side_3.x1=rect.x
+        side_3.y1=rect.y+rect.height
+        side_3.x2=rect.x+rect.width
+        side_3.y2=rect.y+rect.height
+
+        side_4=line_buffer[3]
+        side_4.x1=rect.x
+        side_4.y1=rect.y+rect.height
+        side_4.x2=rect.x
+        side_4.y2=rect.y
+
+        current_intersection=point_buffer[0]
+        _clear_point(current_intersection)
+
+        line_x=line.x2-line.x1
+        line_y=line.y2-line.y1
+
+        side_idx=0
+        while side_idx<4:
+            side=line_buffer[side_idx]
+
+            dot_product_line_with_side_normal=(line_x*(side.y2-side.y1) + 
+                                               line_y*(side.x2-side.x1))
+
+            if ((dot_product_line_with_side_normal < 0) and
+                line_intersects_line(line, side, current_intersection)):
+                result=True
+                _copy_point(current_intersection, intersection)
+
+        if not result:
+            origin=point_buffer[1]
+            origin.x=line.x1
+            origin.y=line.y1
+
+            if point_in_rect(origin, rect):
+                result=True
+                _copy_point(origin, intersection)
+
+    return result;
+                
+def moving_rectangle_intersects_rectangle(a, a_motion, b, distance_until_collision):
+    return False
+
 def _parallel_line_collision(a, b, intersection):
     a1=point_buffer[0]
     a1.x = a.x1
@@ -100,11 +166,8 @@ def _parallel_line_collision(a, b, intersection):
     result = False
 
     if point_on_line( a1, b ):
-        if intersection is not None:
-            intersection.x=a1.x
-            intersection.y=a1.y
-
         result = True
+        _copy_point(a1, intersection)
     else:
         b1=point_buffer[1]
         b2=point_buffer[2]
@@ -120,31 +183,18 @@ def _parallel_line_collision(a, b, intersection):
 
         if b1_on_a and b2_on_a:
             result=True
-
-            if intersection is not None:
-                distance_to_b1 = a1.distance_squared(b1)
-                distance_to_b2 = a1.distance_squared(b2)
-
-                if distance_to_b1 < distance_to_b2:
-                    intersection.x=b1.x
-                    intersection.y=b1.y
-                else:
-                    intersection.x=b2.x
-                    intersection.y=b2.y
+            if a1.distance_squared(b1) < a1.distance_squared(b2):
+                _copy_point(b1, intersection)
+            else:
+                _copy_point(b2, intersection)
 
         elif b1_on_a:
             result=True
-            
-            if intersection is not None:
-                intersection.x=b1.x
-                intersection.y=b1.y
+            _copy_point(b1, intersection)
 
         elif b2_on_a:
             result=True
-
-            if intersection is not None:
-                intersection.x=b1.x
-                intersection.y=b1.y
+            _copy_point(b2, intersection)
 
     return result
 
@@ -168,4 +218,13 @@ def _copy_rect( src, dest ):
     dest[2]=src[2]
     dest[3]=src[3]
     
-    
+
+def _copy_point(src, dest):
+    if dest is not None:
+        dest[0]=src[0]
+        dest[1]=src[1]
+                
+def _clear_point(p):
+    if p is not None:
+        p[0]=0
+        p[1]=0
