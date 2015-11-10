@@ -68,6 +68,10 @@ def line_intersects_line(a, b, intersection):
 
         result = (x_on_line_a and y_on_line_b)
 
+        if result and intersection is not None:
+            intersection.x=b.x1
+            intersection.y=y_at_intercept
+
     elif math.fabs(slope_a, slope_b) < 0.0001:
         result=_parallel_line_collision(a,b)
     else:

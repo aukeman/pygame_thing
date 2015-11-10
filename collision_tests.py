@@ -1,4 +1,4 @@
-from collision import distance_until_rectangles_intersect, rectangles_overlap, point_on_line
+from collision import distance_until_rectangles_intersect, rectangles_overlap, point_on_line, line_intersects_line
 from line import Line
 from point import Point
 from pygame import Rect
@@ -74,8 +74,22 @@ class CollisionTest(unittest.TestCase):
         p=Point(5,5)
         l=Line(10,10,0,0)
         self.assertEqual(point_on_line(p,l), True)
-    
 
+    def test_point_not_on_line(self):
+        p=Point(0,5)
+        l=Line(10,10,0,0)
+        self.assertEqual(point_on_line(p,l), False)
+
+    def test_perpendicular_lines_intersect(self):
+        l1=Line(0,1,10,1)
+        l2=Line(2,5,2,-5)
+        p=Point(0,0)
+        
+        self.assertEquals(line_intersects_line(l1,l2,p),True)
+        self.assertEquals(p.x, 2)
+        self.assertEquals(p.y, 1)
+        
+        
 
 if __name__ == "__main__":
     unittest.main()
