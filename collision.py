@@ -34,7 +34,7 @@ def point_on_line( point, line ):
 
         else:
             slope = line.slope()
-            y_intercept=line.y - slope*line.x2
+            y_intercept=line.y2 - slope*line.x2
             y_at_point_x = slope*point.x + y_intercept;
 
             result = (math.fabs(y_at_point_x - point.y) < 0.01);
@@ -102,28 +102,28 @@ def line_intersects_rectangle(line, rect, intersection):
         
     if rectangles_overlap(rect, line_bbox):
         side_1=line_buffer[0]
-        side_1.x1=rect.x+rect.width 
-        side_1.y1=rect.y
-        side_1.x2=rect.x
-        side_1.y2=rect.y
+        side_1.x1=rect[0]+rect[2]
+        side_1.y1=rect[1]
+        side_1.x2=rect[0]
+        side_1.y2=rect[1]
 
         side_2=line_buffer[1]
-        side_2.x1=rect.x+rect.width 
-        side_2.y1=rect.y
-        side_2.x2=rect.x+rect.width
-        side_2.y2=rect.y+rect.height
+        side_2.x1=rect[0]+rect[2] 
+        side_2.y1=rect[1]
+        side_2.x2=rect[0]+rect[2]
+        side_2.y2=rect[1]+rect[3]
 
         side_3=line_buffer[2]
-        side_3.x1=rect.x
-        side_3.y1=rect.y+rect.height
-        side_3.x2=rect.x+rect.width
-        side_3.y2=rect.y+rect.height
+        side_3.x1=rect[0]
+        side_3.y1=rect[1]+rect[3]
+        side_3.x2=rect[0]+rect[2]
+        side_3.y2=rect[1]+rect[3]
 
         side_4=line_buffer[3]
-        side_4.x1=rect.x
-        side_4.y1=rect.y+rect.height
-        side_4.x2=rect.x
-        side_4.y2=rect.y
+        side_4.x1=rect[0]
+        side_4.y1=rect[1]+rect[3]
+        side_4.x2=rect[0]
+        side_4.y2=rect[1]
 
         current_intersection=point_buffer[0]
         _clear_point(current_intersection)
@@ -159,13 +159,13 @@ def line_intersects_rectangle(line, rect, intersection):
 def distance_until_rectangles_intersect(a, a_motion, b):
     result=999999.9
 
-    amx=a_motion.x
-    amy=a_motion.y
+    amx=a_motion[0]
+    amy=a_motion[1]
     
-    ax=a.x
-    ay=a.y
-    w=a.width
-    h=a.height
+    ax=a[0]
+    ay=a[1]
+    w=a[2]
+    h=a[3]
 
     line_buffer[0].set( ax,   ay,   ax+amx,   ay+amy )
     line_buffer[1].set( ax+w, ay,   ax+w+amx, ay+amy )
@@ -178,7 +178,6 @@ def distance_until_rectangles_intersect(a, a_motion, b):
     idx=0
     while idx < 4:
         if line_intersects_rectangle(line_buffer[idx], b, collision_point):
-            result=True
             point_buffer[1].set(line_buffer[idx].x1, line_buffer[idx].y1)
             d_sqrd=point_buffer[1].distance_squared(collision_point)
             if d_sqrd < result:
@@ -260,3 +259,5 @@ def _clear_point(p):
     if p is not None:
         p[0]=0
         p[1]=0
+
+

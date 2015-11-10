@@ -10,8 +10,8 @@ import pygame
 from animation import Animation
 from controls import Controls
 from image import Image
-from collision import rectangles_overlap
-
+from collision import rectangles_overlap, distance_until_rectangles_intersect
+from point import Point
 
 
 
@@ -63,6 +63,12 @@ current_anim=standing
 facing_right=True
 blit_flags=Image.NONE
 
+x_vector=Point(0,0)
+y_vector=Point(0,0)
+
+
+bbox=pygame.Rect(64,64,16,16)
+
 # -------- Main Program Loop -----------
 while not done:
 
@@ -105,14 +111,18 @@ while not done:
         blit_flags=Image.NONE
 
     if controls.left:
-        coords[0] -= dx
+        x_vector.x = -dx
     elif controls.right:
-        coords[0] += dx
+        x_vector.x = dx
+    else:
+        x_vector.x = 0
     
     if controls.up:
-        coords[1] -= dy
+        y_vector.y = -dy
     elif controls.down:
-        coords[1] += dy
+        y_vector.y = dy
+    else:
+        y_vector.y = 0
 
     # --- Game logic should go here
     # --- Drawing code should go here
@@ -127,20 +137,24 @@ while not done:
             if i == 0 or i == 12 or j == 0 or j == 9:
                 tiles.blit([0,0,16,16], i*16, j*16, surf)
 
-                if rectangles_overlap(coords+[16, 16], [i*16, j*16, 16, 16]):
-                    overlap=True
+                tile_bbox=[i*16, j*16, 16, 16]
+
+                distance_x=distance_until_rectangles_intersect(bbox,x_vector,tile_bbox)
+                if distance_x is not None:
+                    x_vector.x=distance_x
+                    print distance_x
+
+                distance_y=distance_until_rectangles_intersect(bbox,y_vector,tile_bbox)
+                if distance_y is not None:
+                    y_vector.y=distance_y
+
             else:
                 tiles.blit([16,0,16,16], i*16, j*16, surf)
 
-    mario.blit(current_anim.get_frame(), coords[0], coords[1], surf, blit_flags)
+    bbox[0] += x_vector.x
+    bbox[1] += y_vector.y
 
-    if overlap:
-        text=font.render("overlap!", True, WHITE)
-        surf.blit(text, [10, 10])
-
-
-#    text = font.render('%05.1f % 8.6f % 5.3f' % (clock.get_fps(), dt, dx), False, WHITE)
-#    surf.blit(text, [10, 10])
+    mario.blit(current_anim.get_frame(), bbox.x, bbox.y, surf, blit_flags)
 
     pygame.transform.scale(surf, size, screen)
 
