@@ -161,6 +161,13 @@ class CollisionTest(unittest.TestCase):
         self.assertEquals(p.x,2.5)
         self.assertEquals(p.y,0)
 
+    def test_distance_until_rectangles_intersect(self):
+        r1=Rect(0,0,10,10)
+        r2=Rect(15,5,10,10)
+        v=Point(10,0)
+
+        self.assertEquals(distance_until_rectangles_intersect(r1,v,r2),5)
+
         
 if __name__ == "__main__":
     unittest.main()

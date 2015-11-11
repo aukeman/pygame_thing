@@ -171,6 +171,7 @@ def distance_until_rectangles_intersect(a, a_motion, b):
     w=a[2]
     h=a[3]
 
+
     line_buffer[0].set( ax,   ay,   ax+amx,   ay+amy )
     line_buffer[1].set( ax+w, ay,   ax+w+amx, ay+amy )
     line_buffer[2].set( ax,   ay+h, ax+amx,   ay+h+amy )
@@ -189,7 +190,7 @@ def distance_until_rectangles_intersect(a, a_motion, b):
         idx+=1
 
     if result < 999999.9:
-        return math.sqrt(result)
+        return math.sqrt( float(result) )
     else:
         return None
 
