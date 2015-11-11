@@ -28,4 +28,4 @@ class Line:
         if self.x2 == self.x1:
             return None
         else:
-            return (self.y2 - self.y1) / (self.x2 - self.x1);
+            return float(self.y2 - self.y1) / float(self.x2 - self.x1);

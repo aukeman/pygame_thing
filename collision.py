@@ -52,7 +52,7 @@ def line_intersects_line(a, b, intersection):
 
     if slope_a is None and slope_b is None:
         # a and b are both vertical
-        result=_parallel_line_collision(a,b)
+        result=_parallel_line_collision(a,b,intersection)
     elif slope_a is None:
         # a is vertical
         result=line_intersects_line(b, a, intersection)
@@ -72,8 +72,8 @@ def line_intersects_line(a, b, intersection):
             intersection.x=b.x1
             intersection.y=y_at_intercept
 
-    elif math.fabs(slope_a, slope_b) < 0.0001:
-        result=_parallel_line_collision(a,b)
+    elif math.fabs(slope_a-slope_b) < 0.0001:
+        result=_parallel_line_collision(a,b,intersection)
     else:
         x_at_intercept = ((a.y2-slope_a*a.x2)-(b.y2-slope_b*b.x2))/(slope_b-slope_a)
 
@@ -85,7 +85,7 @@ def line_intersects_line(a, b, intersection):
 
         result = ( x_on_line_a and x_on_line_b )
 
-        if intersection is not None:
+        if result and intersection is not None:
             y_at_intercept = slope_a * x_at_intercept + (a.y2-slope_a*a.x2)
 	
             intersection.x = x_at_intercept;
