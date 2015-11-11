@@ -13,9 +13,6 @@ from image import Image
 from collision import rectangles_overlap, distance_until_rectangles_intersect
 from point import Point
 
-
-
-
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -142,7 +139,6 @@ while not done:
                 distance_x=distance_until_rectangles_intersect(bbox,x_vector,tile_bbox)
                 if distance_x is not None:
                     x_vector.x=distance_x
-                    print distance_x
 
                 distance_y=distance_until_rectangles_intersect(bbox,y_vector,tile_bbox)
                 if distance_y is not None:
