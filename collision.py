@@ -2,14 +2,15 @@ import pygame
 import math
 from line import Line
 from point import Point
+from object_pool import ObjectPool
 
-rect_buffer=[pygame.Rect(0,0,0,0) for i in range(0,10)]
-line_buffer=[Line(0,0,0,0) for i in range(0,10)]
-point_buffer=[Point(0,0) for i in range(0,10)]
+rect_pool=ObjectPool(100,pygame.Rect,0,0,0,0)
+line_pool=ObjectPool(100,Line,0,0,0,0)
+point_pool=ObjectPool(100,Point,0,0)
 
 def rectangles_overlap( a, b ):
-    local_a=rect_buffer[0]
-    local_b=rect_buffer[1]
+    local_a=rect_pool(0,0,0,0)
+    local_b=rect_pool(0,0,0,0)
 
     _copy_and_normalize_rect(a, local_a)
     _copy_and_normalize_rect(b, local_b)
@@ -96,98 +97,84 @@ def line_intersects_line(a, b, intersection):
 def line_intersects_rectangle(line, rect, intersection):
     result=False
 
-    line_bbox=rect_buffer[0]
-    line_bbox.x=line.x1
-    line_bbox.y=line.y1
-    line_bbox.width=line.x2-line.x1
-    line_bbox.height=line.y2-line.y1
+    line_bbox=rect_pool(line.x1,line.y1,line.x2-line.x1,line.y2-line.y1)
 
     _clear_point(intersection)
         
     if rectangles_overlap(rect, line_bbox):
-        side_1=line_buffer[0]
-        side_1.x1=rect[0]+rect[2]
-        side_1.y1=rect[1]
-        side_1.x2=rect[0]
-        side_1.y2=rect[1]
+        side_1=line_pool(rect.x+rect.width, rect.y, rect.x, rect.y)
+        side_2=line_pool(rect.x+rect.width, rect.y, rect.x+rect.width, rect.y+rect.height)
+        side_3=line_pool(rect.x, rect.y+rect.height, rect.x+rect.width, rect.y+rect.height)
+        side_4=line_pool(rect.x, rect.y+rect.height, rect.x, rect.y)
 
-        side_2=line_buffer[1]
-        side_2.x1=rect[0]+rect[2] 
-        side_2.y1=rect[1]
-        side_2.x2=rect[0]+rect[2]
-        side_2.y2=rect[1]+rect[3]
-
-        side_3=line_buffer[2]
-        side_3.x1=rect[0]
-        side_3.y1=rect[1]+rect[3]
-        side_3.x2=rect[0]+rect[2]
-        side_3.y2=rect[1]+rect[3]
-
-        side_4=line_buffer[3]
-        side_4.x1=rect[0]
-        side_4.y1=rect[1]+rect[3]
-        side_4.x2=rect[0]
-        side_4.y2=rect[1]
-
-        current_intersection=point_buffer[0]
+        current_intersection=point_pool(0,0)
         _clear_point(current_intersection)
 
-        line_x=line.x2-line.x1
-        line_y=line.y2-line.y1
+        v=point_pool(line.x2-line.x1, line.y2-line.y1)
 
-        side_idx=0
-        while side_idx<4:
-            side=line_buffer[side_idx]
-
-            dot_product_line_with_side_normal=(line_x*(side.y2-side.y1) + 
-                                               line_y*(side.x2-side.x1))
-
-            if ((dot_product_line_with_side_normal < 0) and
-                line_intersects_line(line, side, current_intersection)):
-                result=True
-                _copy_point(current_intersection, intersection)
-
-            side_idx+=1
+        result = _line_intersects_side(line, side_1, current_intersection)
+        result = result or _line_intersects_side(line, side_2, current_intersection)
+        result = result or _line_intersects_side(line, side_3, current_intersection)
+        result = result or _line_intersects_side(line, side_4, current_intersection)
 
         if not result:
-            origin=point_buffer[1]
-            origin.x=line.x1
-            origin.y=line.y1
+            origin=point_pool(line.x1,line.y1)
 
             if point_in_rect(origin, rect):
                 result=True
                 _copy_point(origin, intersection)
 
     return result;
-                
+   
+def _line_intersects_side(line, side, intersection):
+    dot_product_line_with_side_normal=((line.x2-line.x1)*(side.y2-side.y1) + 
+                                       (line.y2-line.y1)*(side.x2-side.x1))
+
+    return ((dot_product_line_with_side_normal < 0) and
+            line_intersects_line(line, side, intersection))
+        
+             
 def distance_until_rectangles_intersect(a, a_motion, b):
     result=999999.9
 
-    amx=a_motion[0]
-    amy=a_motion[1]
+    amx=a_motion.x
+    amy=a_motion.y
     
-    ax=a[0]
-    ay=a[1]
-    w=a[2]
-    h=a[3]
+    ax=a.x
+    ay=a.y
+    w=a.width
+    h=a.height
 
-
-    line_buffer[0].set( ax,   ay,   ax+amx,   ay+amy )
-    line_buffer[1].set( ax+w, ay,   ax+w+amx, ay+amy )
-    line_buffer[2].set( ax,   ay+h, ax+amx,   ay+h+amy )
-    line_buffer[3].set( ax+w, ay+h, ax+w+amx, ay+h+amy )
+    corner1=line_pool( ax,   ay,   ax+amx,   ay+amy )
+    corner2=line_pool( ax+w, ay,   ax+w+amx, ay+amy )
+    corner3=line_pool( ax,   ay+h, ax+amx,   ay+h+amy )
+    corner4=line_pool( ax+w, ay+h, ax+w+amx, ay+h+amy )
     
-    collision_point=point_buffer[0]
-    _clear_point(collision_point)
+    collision_point=point_pool(0,0)
 
-    idx=0
-    while idx < 4:
-        if line_intersects_rectangle(line_buffer[idx], b, collision_point):
-            point_buffer[1].set(line_buffer[idx].x1, line_buffer[idx].y1)
-            d_sqrd=point_buffer[1].distance_squared(collision_point)
-            if d_sqrd < result:
-                result = d_sqrd
-        idx+=1
+    if line_intersects_rectangle(corner1,b,collision_point):
+        origin=point_pool(corner1.x1, corner1.y1)
+        d_sqrd=origin.distance_squared(collision_point)
+        if d_sqrd < result:
+            result=d_sqrd
+
+    if line_intersects_rectangle(corner2,b,collision_point):
+        origin=point_pool(corner2.x1, corner2.y1)
+        d_sqrd=origin.distance_squared(collision_point)
+        if d_sqrd < result:
+            result=d_sqrd
+
+    if line_intersects_rectangle(corner3,b,collision_point):
+        origin=point_pool(corner3.x1, corner3.y1)
+        d_sqrd=origin.distance_squared(collision_point)
+        if d_sqrd < result:
+            result=d_sqrd
+
+    if line_intersects_rectangle(corner4,b,collision_point):
+        origin=point_pool(corner4.x1, corner4.y1)
+        d_sqrd=origin.distance_squared(collision_point)
+        if d_sqrd < result:
+            result=d_sqrd
 
     if result < 999999.9:
         return math.sqrt( float(result) )
@@ -195,9 +182,7 @@ def distance_until_rectangles_intersect(a, a_motion, b):
         return None
 
 def _parallel_line_collision(a, b, intersection):
-    a1=point_buffer[0]
-    a1.x = a.x1
-    a1.y = a.y1
+    a1=point_pool(a.x1, a.y1)
   
     result = False
 
@@ -205,14 +190,8 @@ def _parallel_line_collision(a, b, intersection):
         result = True
         _copy_point(a1, intersection)
     else:
-        b1=point_buffer[1]
-        b2=point_buffer[2]
-
-        b1.x=b.x1
-        b1.y=b.y1
-
-        b2.x=b.x2
-        b2.y=b.y2
+        b1=point_pool(b.x1, b.y1)
+        b2=point_pool(b.x2, b.y2)
 
         b1_on_a = point_on_line(b1, a);
         b2_on_a = point_on_line(b2, a);
@@ -249,20 +228,20 @@ def _copy_and_normalize_rect( src, dest ):
 
 
 def _copy_rect( src, dest ):
-    dest[0]=src[0]
-    dest[1]=src[1]
-    dest[2]=src[2]
-    dest[3]=src[3]
+    dest.x=src.x
+    dest.y=src.y
+    dest.width=src.width
+    dest.height=src.height
     
 
 def _copy_point(src, dest):
     if dest is not None:
-        dest[0]=src[0]
-        dest[1]=src[1]
+        dest.x=src.x
+        dest.y=src.y
                 
 def _clear_point(p):
     if p is not None:
-        p[0]=0
-        p[1]=0
+        p.x=0
+        p.y=0
 
 

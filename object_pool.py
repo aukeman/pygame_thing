@@ -4,7 +4,7 @@ class ObjectPool:
         self.pool=[ pooled_type(*init_args) for i in range(0,size) ]
         self.current_idx=0
 
-    def get(self,*args):
+    def __call__(self,*args):
         result=self.pool[ self.current_idx ]
 
         self.current_idx += 1

@@ -7,42 +7,42 @@ import unittest
 class CollisionTest(unittest.TestCase):
     
     def test_colocated_rectangles_overlap(self):
-        r=[0, 0, 10, 10]
+        r=Rect(0, 0, 10, 10)
         self.assertEqual(rectangles_overlap(r, r), True)
 
     def test_colocated_inverted_rectangles_overlap(self):
-        r1=[0, 0, 10, 10]
-        r2=[10, 10, -10, -10]
+        r1=Rect(0, 0, 10, 10)
+        r2=Rect(10, 10, -10, -10)
         self.assertEqual(rectangles_overlap(r1, r2), True)
 
     def test_contained_rectangle_overlaps(self):
-        r1=[0,0,10,10]
-        r2=[3,3,4,4]
+        r1=Rect(0,0,10,10)
+        r2=Rect(3,3,4,4)
         self.assertEqual(rectangles_overlap(r1, r2), True)
 
     def test_adjacent_on_side_rectangles_overlap(self):
-        r1=[0,0,10,10]
-        r2=[10,3,4,4]
+        r1=Rect(0,0,10,10)
+        r2=Rect(10,3,4,4)
         self.assertEqual(rectangles_overlap(r1, r2), True)
 
     def test_adjacent_on_top_rectangles_overlap(self):
-        r1=[0,0,10,10]
-        r2=[3,10,4,4]
+        r1=Rect(0,0,10,10)
+        r2=Rect(3,10,4,4)
         self.assertEqual(rectangles_overlap(r1, r2), True)
 
     def test_overlap_side_rectangles_overlap(self):
-        r1=[0,0,10,10]
-        r2=[-3,3,6,4]
+        r1=Rect(0,0,10,10)
+        r2=Rect(-3,3,6,4)
         self.assertEqual(rectangles_overlap(r1, r2), True)
 
     def test_overlap_top_rectangles_overlap(self):
-        r1=[0,0,10,10]
-        r2=[3,-3,4,6]
+        r1=Rect(0,0,10,10)
+        r2=Rect(3,-3,4,6)
         self.assertEqual(rectangles_overlap(r1, r2), True)
         
     def test_disjoint_rectangles_do_not_overlap(self):
-        r1=[0,0,10,10]
-        r2=[20,0,4,6]
+        r1=Rect(0,0,10,10)
+        r2=Rect(20,0,4,6)
         self.assertEqual(rectangles_overlap(r1, r2), False)
         
     def test_endpoint1_on_line(self):
