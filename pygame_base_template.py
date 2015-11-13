@@ -134,7 +134,7 @@ while not done:
             if i == 0 or i == 12 or j == 0 or j == 9:
                 tiles.blit([0,0,16,16], i*16, j*16, surf)
 
-                tile_bbox=[i*16, j*16, 16, 16]
+                tile_bbox=pygame.Rect(i*16, j*16, 16, 16)
 
                 distance_x=distance_until_rectangles_intersect(bbox,x_vector,tile_bbox)
                 if distance_x is not None:

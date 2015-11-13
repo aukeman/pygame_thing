@@ -161,12 +161,34 @@ class CollisionTest(unittest.TestCase):
         self.assertEquals(p.x,2.5)
         self.assertEquals(p.y,0)
 
+    def test_line_doesnt_intersect_rectangle(self):
+        l=Line(2,-10, 3,10)
+        r=Rect(5,5, 5,5)
+
+        self.assertEquals(line_intersects_rectangle(l,r),False)
+        
+    def test_line_starts_in_rectangle(self):
+        l=Line(3,4, 10,3)
+        r=Rect(0,0,5,5)
+        p=Point(0,0)
+
+        self.assertEquals(line_intersects_rectangle(l,r,p),True)
+        self.assertEquals(p.x,3)
+        self.assertEquals(p.y,4)
+
     def test_distance_until_rectangles_intersect(self):
         r1=Rect(0,0,10,10)
         r2=Rect(15,5,10,10)
         v=Point(10,0)
 
         self.assertEquals(distance_until_rectangles_intersect(r1,v,r2),5)
+
+    def test_moving_rectangles_dont_intersect(self):
+        r1=Rect(0,0,3,3)
+        r2=Rect(15,5,10,10)
+        v=Point(1,0)
+
+        self.assertEquals(distance_until_rectangles_intersect(r1,v,r2),None)
 
         
 if __name__ == "__main__":

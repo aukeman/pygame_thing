@@ -42,8 +42,11 @@ def point_on_line( point, line ):
 
     return result
 
+def point_in_rect(point, rect):
+    return (rect.x <= point.x <= rect.x+rect.width and
+            rect.y <= point.y <= rect.y+rect.height)
 
-def line_intersects_line(a, b, intersection):
+def line_intersects_line(a, b, intersection=None):
     result=False
 
     _clear_point(intersection)
@@ -94,7 +97,7 @@ def line_intersects_line(a, b, intersection):
 
     return result
 
-def line_intersects_rectangle(line, rect, intersection):
+def line_intersects_rectangle(line, rect, intersection=None):
     result=False
 
     line_bbox=rect_pool(line.x1,line.y1,line.x2-line.x1,line.y2-line.y1)
@@ -112,10 +115,21 @@ def line_intersects_rectangle(line, rect, intersection):
 
         v=point_pool(line.x2-line.x1, line.y2-line.y1)
 
-        result = _line_intersects_side(line, side_1, current_intersection)
-        result = result or _line_intersects_side(line, side_2, current_intersection)
-        result = result or _line_intersects_side(line, side_3, current_intersection)
-        result = result or _line_intersects_side(line, side_4, current_intersection)
+        if _line_intersects_side(line, side_1, current_intersection):
+            result=True
+            _copy_point(current_intersection, intersection)
+
+        if _line_intersects_side(line, side_2, current_intersection):
+            result=True
+            _copy_point(current_intersection, intersection)
+            
+        if _line_intersects_side(line, side_3, current_intersection):
+            result=True
+            _copy_point(current_intersection, intersection)
+            
+        if _line_intersects_side(line, side_4, current_intersection):
+            result=True
+            _copy_point(current_intersection, intersection)
 
         if not result:
             origin=point_pool(line.x1,line.y1)
@@ -126,7 +140,7 @@ def line_intersects_rectangle(line, rect, intersection):
 
     return result;
    
-def _line_intersects_side(line, side, intersection):
+def _line_intersects_side(line, side, intersection=None):
     dot_product_line_with_side_normal=((line.x2-line.x1)*(side.y2-side.y1) + 
                                        (line.y2-line.y1)*(side.x2-side.x1))
 
@@ -181,7 +195,7 @@ def distance_until_rectangles_intersect(a, a_motion, b):
     else:
         return None
 
-def _parallel_line_collision(a, b, intersection):
+def _parallel_line_collision(a, b, intersection=None):
     a1=point_pool(a.x1, a.y1)
   
     result = False
