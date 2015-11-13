@@ -242,10 +242,11 @@ def _copy_and_normalize_rect( src, dest ):
 
 
 def _copy_rect( src, dest ):
-    dest.x=src.x
-    dest.y=src.y
-    dest.width=src.width
-    dest.height=src.height
+    if dest is not None:
+        dest.x=src.x
+        dest.y=src.y
+        dest.width=src.width
+        dest.height=src.height
     
 
 def _copy_point(src, dest):
