@@ -9,4 +9,5 @@ class Controls:
         self.up=kwargs.get('up', False)
         self.down=kwargs.get('down', False)
         self.jump=kwargs.get('jump', False)
+        self.diagonal=(self.left or self.right) and (self.up or self.down)
         

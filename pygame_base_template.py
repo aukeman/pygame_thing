@@ -6,7 +6,7 @@ http://programarcadegames.com/
 http://simpson.edu/computer-science/
 Explanation video: http://youtu.be/vRB_983kUMc
 """
-import pygame
+import pygame,math
 from animation import Animation
 from controls import Controls
 from image import Image
@@ -41,7 +41,8 @@ mario=Image('mario.png', color_key=(0,0,0), flags=Image.FLIPPED_BOTH)
 
 surf=pygame.Surface((200, 150))
 
-speed_pps=60.0
+ortho_speed_pps=60.0
+angle_speed_pps=ortho_speed_pps/math.sqrt(2.0)
 
 coords=[10.0,10.0]
 
@@ -61,14 +62,17 @@ current_anim=standing
 facing_right=True
 blit_flags=Image.NONE
 
-x_vector=Point(0,0)
-y_vector=Point(0,0)
-z_vector=0
-
 pos_x=64
 pos_y=64
 pos_z=0
-bbox=Rect(pos_x+1,pos_y+1,14,14)
+bbox=Rect(pos_x+4,pos_y+8+1,8,6)
+
+x_vector_bbox=Rect(bbox.x, bbox.y, bbox.width, bbox.height)
+y_vector_bbox=Rect(bbox.x, bbox.y, bbox.width, bbox.height)
+
+x_vector=Point(0,0)
+y_vector=Point(0,0)
+z_vector=0
 
 tile_bbox=Rect(0,0,0,0)
 
@@ -85,13 +89,18 @@ while not done:
 
     keys=pygame.key.get_pressed()
 
-    dx=dy=speed_pps * dt
-
     controls.update( left=keys[pygame.K_LEFT],
                      right=keys[pygame.K_RIGHT],
                      up=keys[pygame.K_UP],
                      down=keys[pygame.K_DOWN],
                      jump=keys[pygame.K_SPACE])
+
+    if controls.diagonal:
+        speed_pps=angle_speed_pps
+    else:
+        speed_pps=ortho_speed_pps
+
+    dx=dy=speed_pps * dt
 
     if current_anim==standing and (controls.left or 
                                    controls.right or 
@@ -136,25 +145,28 @@ while not done:
     else:
         y_vector.y = 0
 
+    bbox.x=pos_x+4
+    bbox.y=pos_y+8+1
+
     if x_vector.x < 0:
-        bbox.x = pos_x
-        bbox.width=15
+        x_vector_bbox.x = bbox.x-1
+        x_vector_bbox.width=bbox.width+1
     elif 0 < x_vector.x:
-        bbox.x = pos_x+1
-        bbox.width=15
+        x_vector_bbox.x = bbox.x
+        x_vector_bbox.width = bbox.width+1
     else:
-        bbox.x = pos_x+1
-        bbox.width=14
+        x_vector_bbox.x = bbox.x
+        x_vector_bbox.width=bbox.width
 
     if y_vector.y < 0:
-        bbox.y = pos_y
-        bbox.height=15
+        y_vector_bbox.y = bbox.y-1
+        y_vector_bbox.height=bbox.height+1
     elif 0 < y_vector.y:
-        bbox.y = pos_y+1
-        bbox.height=15
+        y_vector_bbox.y = bbox.y
+        y_vector_bbox.height=bbox.height+1
     else:
-        bbox.y = pos_y+1
-        bbox.height=14
+        y_vector_bbox.y = bbox.y
+        y_vector_bbox.height=bbox.height
 
     # --- Game logic should go here
     # --- Drawing code should go here
@@ -171,14 +183,14 @@ while not done:
 
                 tile_bbox.__init__(i*16, j*16, 16, 16)
 
-                distance_x=distance_until_rectangles_intersect(bbox,x_vector,tile_bbox)
+                distance_x=distance_until_rectangles_intersect(x_vector_bbox,x_vector,tile_bbox)
                 if distance_x is not None:
                     if x_vector.x < 0:
                         x_vector.x = -distance_x
                     else:
                         x_vector.x=distance_x
 
-                distance_y=distance_until_rectangles_intersect(bbox,y_vector,tile_bbox)
+                distance_y=distance_until_rectangles_intersect(y_vector_bbox,y_vector,tile_bbox)
                 if distance_y is not None:
                     if y_vector.y < 0:
                         y_vector.y=-distance_y
