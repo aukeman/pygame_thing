@@ -63,10 +63,11 @@ blit_flags=Image.NONE
 
 x_vector=Point(0,0)
 y_vector=Point(0,0)
-
+z_vector=0
 
 pos_x=64
 pos_y=64
+pos_z=0
 bbox=Rect(pos_x+1,pos_y+1,14,14)
 
 tile_bbox=Rect(0,0,0,0)
@@ -89,7 +90,8 @@ while not done:
     controls.update( left=keys[pygame.K_LEFT],
                      right=keys[pygame.K_RIGHT],
                      up=keys[pygame.K_UP],
-                     down=keys[pygame.K_DOWN] )
+                     down=keys[pygame.K_DOWN],
+                     jump=keys[pygame.K_SPACE])
 
     if current_anim==standing and (controls.left or 
                                    controls.right or 
@@ -112,6 +114,14 @@ while not done:
         facing_right=True
         blit_flags=Image.NONE
 
+    if controls.jump and pos_z == 0:
+        z_vector=-75.0
+    elif pos_z < 0:
+        z_vector += 100.0*dt
+    else:
+        z_vector=0
+        pos_z=0
+        
     if controls.left:
         x_vector.x = -dx
     elif controls.right:
@@ -180,8 +190,9 @@ while not done:
 
     pos_x += x_vector.x
     pos_y += y_vector.y
+    pos_z += z_vector*dt
 
-    mario.blit(current_anim.get_frame(), pos_x, pos_y, surf, blit_flags)
+    mario.blit(current_anim.get_frame(), pos_x, pos_y+pos_z, surf, blit_flags)
 
     pygame.transform.scale(surf, size, screen)
 

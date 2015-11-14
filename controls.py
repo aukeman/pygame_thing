@@ -8,4 +8,5 @@ class Controls:
         self.right=kwargs.get('right', False)
         self.up=kwargs.get('up', False)
         self.down=kwargs.get('down', False)
+        self.jump=kwargs.get('jump', False)
         
