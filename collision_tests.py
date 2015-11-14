@@ -1,7 +1,7 @@
 from collision import distance_until_rectangles_intersect, rectangles_overlap, point_on_line, line_intersects_line, line_intersects_rectangle
 from line import Line
 from point import Point
-from pygame import Rect
+from rect import Rect
 import unittest
 
 class CollisionTest(unittest.TestCase):

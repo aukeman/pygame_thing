@@ -12,6 +12,7 @@ from controls import Controls
 from image import Image
 from collision import rectangles_overlap, distance_until_rectangles_intersect
 from point import Point
+from rect import Rect
 
 # Define some colors
 BLACK = (0, 0, 0)
@@ -64,9 +65,9 @@ x_vector=Point(0,0)
 y_vector=Point(0,0)
 
 
-bbox=pygame.Rect(64,64,16,16)
+bbox=Rect(64,64,16,16)
 
-tile_bbox=pygame.Rect(0,0,0,0)
+tile_bbox=Rect(0,0,0,0)
 
 # -------- Main Program Loop -----------
 while not done:
@@ -149,8 +150,8 @@ while not done:
             else:
                 tiles.blit([16,0,16,16], i*16, j*16, surf)
 
-    bbox[0] += x_vector.x
-    bbox[1] += y_vector.y
+    bbox.x += x_vector.x
+    bbox.y += y_vector.y
 
     mario.blit(current_anim.get_frame(), bbox.x, bbox.y, surf, blit_flags)
 

@@ -1,10 +1,11 @@
 import pygame
 import math
+from rect import Rect
 from line import Line
 from point import Point
 from object_pool import ObjectPool
 
-rect_pool=ObjectPool(100,pygame.Rect,0,0,0,0)
+rect_pool=ObjectPool(100,Rect,0,0,0,0)
 line_pool=ObjectPool(100,Line,0,0,0,0)
 point_pool=ObjectPool(100,Point,0,0)
 
