@@ -65,7 +65,9 @@ x_vector=Point(0,0)
 y_vector=Point(0,0)
 
 
-bbox=Rect(64,64,16,16)
+pos_x=64
+pos_y=64
+bbox=Rect(pos_x+1,pos_y+1,14,14)
 
 tile_bbox=Rect(0,0,0,0)
 
@@ -124,6 +126,26 @@ while not done:
     else:
         y_vector.y = 0
 
+    if x_vector.x < 0:
+        bbox.x = pos_x
+        bbox.width=15
+    elif 0 < x_vector.x:
+        bbox.x = pos_x+1
+        bbox.width=15
+    else:
+        bbox.x = pos_x+1
+        bbox.width=14
+
+    if y_vector.y < 0:
+        bbox.y = pos_y
+        bbox.height=15
+    elif 0 < y_vector.y:
+        bbox.y = pos_y+1
+        bbox.height=15
+    else:
+        bbox.y = pos_y+1
+        bbox.height=14
+
     # --- Game logic should go here
     # --- Drawing code should go here
     # First, clear the screen to white. Don't put other drawing commands
@@ -141,19 +163,25 @@ while not done:
 
                 distance_x=distance_until_rectangles_intersect(bbox,x_vector,tile_bbox)
                 if distance_x is not None:
-                    x_vector.x=distance_x
+                    if x_vector.x < 0:
+                        x_vector.x = -distance_x
+                    else:
+                        x_vector.x=distance_x
 
                 distance_y=distance_until_rectangles_intersect(bbox,y_vector,tile_bbox)
                 if distance_y is not None:
-                    y_vector.y=distance_y
+                    if y_vector.y < 0:
+                        y_vector.y=-distance_y
+                    else:
+                        y_vector.y=distance_y
 
             else:
                 tiles.blit([16,0,16,16], i*16, j*16, surf)
 
-    bbox.x += x_vector.x
-    bbox.y += y_vector.y
+    pos_x += x_vector.x
+    pos_y += y_vector.y
 
-    mario.blit(current_anim.get_frame(), bbox.x, bbox.y, surf, blit_flags)
+    mario.blit(current_anim.get_frame(), pos_x, pos_y, surf, blit_flags)
 
     pygame.transform.scale(surf, size, screen)
 
