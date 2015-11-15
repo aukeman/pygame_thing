@@ -7,7 +7,7 @@ class Player:
     def __init__(self, **kwargs ):
         self.max_speed=kwargs.get('max_speed', 60.0)
         self.acceleration=kwargs.get('acceleration', 60.0)
-        self.deceleration=kwargs.get('deceleration', 45.0)
+        self.deceleration=kwargs.get('deceleration', 60.0)
         self.jump_velocity=kwargs.get('jump_velocity', 100.0)
         self.gravity=kwargs.get('gravity', 50.0)
 
@@ -38,8 +38,8 @@ class Player:
 
         self.accelerate_lower_left=Vector(-1.0, 1.0, magnitude=self.acceleration)
         self.accelerate_lower_right=Vector(1.0, 1.0, magnitude=self.acceleration)
-        self.accelerate_upper_left=Vector(-1.0, 1.0, magnitude=self.acceleration)
-        self.accelerate_upper_right=Vector(1.0, 1.0, magnitude=self.acceleration)
+        self.accelerate_upper_left=Vector(-1.0, -1.0, magnitude=self.acceleration)
+        self.accelerate_upper_right=Vector(1.0, -1.0, magnitude=self.acceleration)
 
     def update(self, controls, dt):
 
