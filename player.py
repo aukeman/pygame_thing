@@ -52,7 +52,12 @@ class Player:
             self.delta_velocity.set_magnitude(0.0)
             self.delta_velocity.add(accel)
             self.delta_velocity.multiply(dt)
-            self.velocity.add(self.delta_velocity)
+            
+            if (accel is self.decelerate and 
+                self.velocity.length_squared() < self.delta_velocity.length_squared()):
+                self.velocity.set_magnitude(0.0)
+            else:
+                self.velocity.add(self.delta_velocity)
 
         self.velocity.limit_length(self.max_speed)
 
