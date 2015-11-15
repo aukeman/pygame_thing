@@ -1,3 +1,5 @@
+import utils
+
 class Point:
     
     def __init__(self, x, y):
@@ -27,6 +29,8 @@ class Point:
         self.y=y
 
     def distance_squared(self, other):
-        x_len=self.x-other.x
-        y_len=self.y-other.y
-        return x_len*x_len+y_len*y_len
+        return utils.distance_squared(self, other)
+
+    def distance(self,other):
+        return utils.distance(self, other)
+
