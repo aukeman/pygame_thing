@@ -38,6 +38,7 @@ font = pygame.font.SysFont(None, 15)
 
 tiles=Image('tiles.png')
 mario=Image('mario.png', color_key=(0,0,0), flags=Image.FLIPPED_BOTH)
+shadow=Image('shadow.png', color_key=(255,0,255))
 
 surf=pygame.Surface((200, 150))
 
@@ -181,6 +182,8 @@ while not done:
     player.position.add(player.delta_position)
 
     pos_z += z_vector*dt
+
+    shadow.blit((0,0,16,8), player.position.x, player.position.y+12, surf)
 
     mario.blit(current_anim.get_frame(), player.position.x, player.position.y+pos_z, surf, blit_flags)
 
