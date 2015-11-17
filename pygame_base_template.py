@@ -52,6 +52,10 @@ walking.activate()
 standing=Animation( Animation.Frame(100, [0*w, 0*h, w, h]) )
 standing.activate()
 
+jumping=Animation( Animation.Frame(100, [4*w, 0*h, w, h]) )
+jumping.activate()
+
+
 controls=Controls()
 
 current_anim=standing
@@ -92,12 +96,17 @@ while not done:
                      jump=keys[pygame.K_SPACE])
 
     
-    if current_anim==standing and player.velocity.is_non_zero():
-        current_anim=walking
-        current_anim.activate()
-    elif current_anim==walking and player.velocity.is_zero():
-        current_anim=standing
-        current_anim.activate()
+    if pos_z < 0:
+        if current_anim != jumping:
+            current_anim=jumping
+            current_anim.activate()
+    else:
+        if current_anim != walking and player.velocity.is_non_zero():
+            current_anim=walking
+            current_anim.activate()
+        elif current_anim != standing and player.velocity.is_zero():
+            current_anim=standing
+            current_anim.activate()
 
     if facing_right and controls.left:
         facing_right=False
