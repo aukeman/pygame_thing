@@ -41,24 +41,29 @@ class Player:
         self.accelerate_upper_left=Vector(-1.0, -1.0, magnitude=self.acceleration)
         self.accelerate_upper_right=Vector(1.0, -1.0, magnitude=self.acceleration)
 
+        self.x_accel_vector=Vector(0,0)
+        self.y_accel_vector=Vector(0,0)
+
     def update(self, controls, dt):
 
-        accel=self._get_accel_vector(controls)
+        x_accel=self._get_x_accel_vector(controls)
+        y_accel=self._get_y_accel_vector(controls)
+
+        self.delta_velocity.set_magnitude(0.0)
+        self.delta_velocity.add(x_accel)
+        self.delta_velocity.add(y_accel)
+        self.delta_velocity.multiply(dt)
         
-        if accel is None:
-            accel=self._get_decel_vector()
+        if ((0 < self.velocity.x and self.velocity.x + self.delta_velocity.x < 0) or
+            (self.velocity.x < 0 and 0 < self.velocity.x + self.delta_velocity.x)):
+            self.delta_velocity.x = -self.velocity.x
 
-        if accel is not None:
-            self.delta_velocity.set_magnitude(0.0)
-            self.delta_velocity.add(accel)
-            self.delta_velocity.multiply(dt)
+        if ((0 < self.velocity.y and self.velocity.y + self.delta_velocity.y < 0) or
+            (self.velocity.y < 0 and 0 < self.velocity.y + self.delta_velocity.y)):
+            self.delta_velocity.y = -self.velocity.y
+
             
-            if (accel is self.decelerate and 
-                self.velocity.length_squared() < self.delta_velocity.length_squared()):
-                self.velocity.set_magnitude(0.0)
-            else:
-                self.velocity.add(self.delta_velocity)
-
+        self.velocity.add(self.delta_velocity)
         self.velocity.limit_length(self.max_speed)
 
         self.delta_position.set_magnitude(0.0)
@@ -68,27 +73,61 @@ class Player:
         self.delta_x_vector.x=self.delta_position.x
         self.delta_y_vector.y=self.delta_position.y
 
-    def _get_accel_vector( self, controls ):
-        if controls.up:
-            if controls.left:
-                return self.accelerate_upper_left
+    def _get_x_accel_vector( self, controls ):
+
+        self.x_accel_vector.set_magnitude(0)
+
+        if controls.up: 
+            if controls.left: 
+                self.x_accel_vector.x = self.accelerate_upper_left.x 
             elif controls.right:
-                return self.accelerate_upper_right
-            else:
-                return self.accelerate_up
-        elif controls.down:
-            if controls.left:
-                return self.accelerate_lower_left
+                self.x_accel_vector.x = self.accelerate_upper_right.x
+
+        elif controls.down: 
+            if controls.left: 
+                self.x_accel_vector.x = self.accelerate_lower_left.x 
             elif controls.right:
-                return self.accelerate_lower_right
-            else:
-                return self.accelerate_down
+                self.x_accel_vector.x = self.accelerate_lower_right.x
+
         elif controls.left:
-            return self.accelerate_left
+            self.x_accel_vector.x=self.accelerate_left.x 
         elif controls.right:
-            return self.accelerate_right
-        else:
-            return None
+            self.x_accel_vector.x=self.accelerate_right.x
+
+        elif self.velocity.x < 0:
+            self.x_accel_vector.x=self.deceleration
+        elif 0 < self.velocity.x:
+            self.x_accel_vector.x=-self.deceleration
+
+        return self.x_accel_vector
+
+    def _get_y_accel_vector( self, controls ):
+
+        self.y_accel_vector.set_magnitude(0)
+
+        if controls.left: 
+            if controls.up: 
+                self.y_accel_vector.y = self.accelerate_upper_left.y 
+            elif controls.down:
+                self.y_accel_vector.y = self.accelerate_lower_left.y
+
+        elif controls.right: 
+            if controls.up: 
+                self.y_accel_vector.y = self.accelerate_upper_right.y 
+            elif controls.down:
+                self.y_accel_vector.y = self.accelerate_lower_right.y
+
+        elif controls.up:
+            self.y_accel_vector.y=self.accelerate_up.y 
+        elif controls.down:
+            self.y_accel_vector.y=self.accelerate_down.y
+
+        elif self.velocity.y < 0:
+            self.y_accel_vector.y=self.deceleration
+        elif 0 < self.velocity.y:
+            self.y_accel_vector.y=-self.deceleration
+
+        return self.y_accel_vector
             
     def _get_decel_vector( self ):
         if self.velocity.is_non_zero():
