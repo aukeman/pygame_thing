@@ -1,26 +1,31 @@
 from vector import Vector
 from rect import Rect
 from point import Point
+from image import Image
 
 class Player:
+
+    STANDING=0
+    WALKING=1
+    JUMPING=2
     
     def __init__(self, **kwargs ):
         self.max_speed=kwargs.get('max_speed', 60.0)
-        self.acceleration=kwargs.get('acceleration', 60.0)
-        self.deceleration=kwargs.get('deceleration', 60.0)
+        self.acceleration=kwargs.get('acceleration', 120.0)
+        self.deceleration=kwargs.get('deceleration', 120.0)
         self.jump_velocity=kwargs.get('jump_velocity', 100.0)
-        self.gravity=kwargs.get('gravity', 50.0)
+        self.gravity=kwargs.get('gravity', 100.0)
 
         self.position=Vector(kwargs.get('x', 0.0),
                              kwargs.get('y', 0.0))
+
+        self.position_z=kwargs.get('z', 0.0)
 
         self.bbox=Rect(self.position.x+kwargs.get('bbox_x',0.0),
                        self.position.y+kwargs.get('bbox_y',0.0),
                        kwargs.get('bbox_width',16.0),
                        kwargs.get('bbox_height',16.0))
         
-                       
-
         self.velocity=Vector(0.0,0.0)
 
         self.delta_x_vector=Vector(0.0, 0.0)
@@ -44,6 +49,14 @@ class Player:
         self.x_accel_vector=Vector(0,0)
         self.y_accel_vector=Vector(0,0)
 
+        self.image=Image(kwargs.get('sprite_sheet'), color_key=(0,0,0), flags=Image.FLIPPED_BOTH)
+
+        self.animations=kwargs.get('animations')
+
+        self.blit_flags=Image.NONE
+        self.facing_right=True
+        self.state='standing'
+
     def update(self, controls, dt):
 
         x_accel=self._get_x_accel_vector(controls)
@@ -61,7 +74,6 @@ class Player:
         if ((0 < self.velocity.y and self.velocity.y + self.delta_velocity.y < 0) or
             (self.velocity.y < 0 and 0 < self.velocity.y + self.delta_velocity.y)):
             self.delta_velocity.y = -self.velocity.y
-
             
         self.velocity.add(self.delta_velocity)
         self.velocity.limit_length(self.max_speed)
@@ -72,6 +84,19 @@ class Player:
 
         self.delta_x_vector.x=self.delta_position.x
         self.delta_y_vector.y=self.delta_position.y
+
+        if self.facing_right and controls.left:
+            self.facing_right=False
+            self.blit_flags=Image.FLIPPED_H
+        elif not self.facing_right and controls.right:
+            self.facing_right=True
+            self.blit_flags=Image.NONE
+
+        self._update_state()
+
+
+    def draw(self, surface):
+        self.image.blit(self.animations[self.state].get_frame(), self.position.x, self.position.y+self.position_z, surface, self.blit_flags)
 
     def _get_x_accel_vector( self, controls ):
 
@@ -138,7 +163,19 @@ class Player:
         else:
             return None
                 
-                
+    def _update_state(self):
+        if self.position_z < 0:
+            if self.state != Player.JUMPING:
+                self.state=Player.JUMPING
+                self.animations[Player.JUMPING].activate()
+        else:
+            if self.state != Player.WALKING and self.velocity.is_non_zero():
+                self.state=Player.WALKING
+                self.animations[Player.WALKING].activate()
+            elif self.state != Player.STANDING and self.velocity.is_zero():
+                self.state=Player.STANDING
+                self.animations[Player.STANDING].activate()
+
 
     
                                       

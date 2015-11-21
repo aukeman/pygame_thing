@@ -45,31 +45,22 @@ surf=pygame.Surface((200, 150))
 
 w=16
 h=16
-walking=Animation( Animation.Frame(100, [1*w, 0*h, w, h]),
-                   Animation.Frame(100, [2*w, 0*h, w, h]),
-                   Animation.Frame(100, [3*w, 0*h, w, h]) )
-walking.activate()
-
-standing=Animation( Animation.Frame(100, [0*w, 0*h, w, h]) )
-standing.activate()
-
-jumping=Animation( Animation.Frame(100, [4*w, 0*h, w, h]) )
-jumping.activate()
-
 
 controls=Controls()
 
-current_anim=standing
-facing_right=True
-blit_flags=Image.NONE
-
 pos_z=0
-
 
 tile_bbox=Rect(0,0,0,0)
 
-player=Player(x=64, y=64)
-
+player=Player(x=64, y=64, 
+              sprite_sheet='mario.png',
+              animations={
+                  Player.WALKING: Animation( Animation.Frame(100, [1*w, 0*h, w, h]),
+                                             Animation.Frame(100, [2*w, 0*h, w, h]),
+                                             Animation.Frame(100, [3*w, 0*h, w, h]) ),
+                  Player.STANDING: Animation( Animation.Frame(100, [0*w, 0*h, w, h]) ),
+                  Player.JUMPING: Animation( Animation.Frame(100, [4*w, 0*h, w, h]) ) } )
+            
 bbox=Rect(player.position.x+4,player.position.y+8+1,8,6)
 
 x_vector_bbox=Rect(bbox.x, bbox.y, bbox.width, bbox.height)
@@ -95,26 +86,6 @@ while not done:
                      up=keys[pygame.K_UP],
                      down=keys[pygame.K_DOWN],
                      jump=keys[pygame.K_SPACE])
-
-    
-    if pos_z < 0:
-        if current_anim != jumping:
-            current_anim=jumping
-            current_anim.activate()
-    else:
-        if current_anim != walking and player.velocity.is_non_zero():
-            current_anim=walking
-            current_anim.activate()
-        elif current_anim != standing and player.velocity.is_zero():
-            current_anim=standing
-            current_anim.activate()
-
-    if facing_right and controls.left:
-        facing_right=False
-        blit_flags=Image.FLIPPED_H
-    elif not facing_right and controls.right:
-        facing_right=True
-        blit_flags=Image.NONE
 
     if controls.jump and pos_z == 0:
         z_vector=-75.0
@@ -185,7 +156,9 @@ while not done:
 
     shadow.blit((0,0,16,8), player.position.x, player.position.y+12, surf)
 
-    mario.blit(current_anim.get_frame(), player.position.x, player.position.y+pos_z, surf, blit_flags)
+    player.draw(surf)
+
+    # mario.blit(current_anim.get_frame(), player.position.x, player.position.y+pos_z, surf, blit_flags)
 
     pygame.transform.scale(surf, size, screen)
 
