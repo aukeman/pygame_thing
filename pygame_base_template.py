@@ -86,14 +86,6 @@ while not done:
                      down=keys[pygame.K_DOWN],
                      jump=keys[pygame.K_SPACE])
 
-    if controls.jump and pos_z == 0:
-        z_vector=-75.0
-    elif pos_z < 0:
-        z_vector += 100.0*dt
-    else:
-        z_vector=0
-        pos_z=0
-        
     player.update( controls, dt )
 
     bbox.x=player.position.x+4

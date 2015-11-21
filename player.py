@@ -13,8 +13,8 @@ class Player:
         self.max_speed=kwargs.get('max_speed', 60.0)
         self.acceleration=kwargs.get('acceleration', 120.0)
         self.deceleration=kwargs.get('deceleration', 120.0)
-        self.jump_velocity=kwargs.get('jump_velocity', 100.0)
-        self.gravity=kwargs.get('gravity', 100.0)
+        self.jump_velocity=kwargs.get('jump_velocity', -75.0)
+        self.gravity=kwargs.get('gravity', 125.0)
 
         self.position=Vector(kwargs.get('x', 0.0),
                              kwargs.get('y', 0.0))
@@ -27,6 +27,7 @@ class Player:
                        kwargs.get('bbox_height',16.0))
         
         self.velocity=Vector(0.0,0.0)
+        self.z_vector=0
 
         self.delta_x_vector=Vector(0.0, 0.0)
         self.delta_y_vector=Vector(0.0, 0.0)
@@ -59,6 +60,14 @@ class Player:
 
     def update(self, controls, dt):
 
+        if controls.jump and self.position_z == 0:
+            self.z_vector=self.jump_velocity
+        elif self.position_z < 0:
+            self.z_vector += self.gravity*dt
+        else:
+            self.z_vector=0
+            self.position_z=0
+
         x_accel=self._get_x_accel_vector(controls)
         y_accel=self._get_y_accel_vector(controls)
 
@@ -84,6 +93,8 @@ class Player:
 
         self.delta_x_vector.x=self.delta_position.x
         self.delta_y_vector.y=self.delta_position.y
+
+        self.position_z += self.z_vector*dt
 
         if self.facing_right and controls.left:
             self.facing_right=False
