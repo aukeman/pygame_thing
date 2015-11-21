@@ -36,9 +36,8 @@ clock = pygame.time.Clock()
  # Select the font to use, size, bold, italics
 font = pygame.font.SysFont(None, 15)
 
-tiles=Image('tiles.png')
-mario=Image('mario.png', color_key=(0,0,0), flags=Image.FLIPPED_BOTH)
-shadow=Image('shadow.png', color_key=(255,0,255))
+tiles=Image('resources/img/tiles.png')
+shadow=Image('resources/img/shadow.png', color_key=(255,0,255))
 
 surf=pygame.Surface((200, 150))
 
@@ -53,7 +52,7 @@ pos_z=0
 tile_bbox=Rect(0,0,0,0)
 
 player=Player(x=64, y=64, 
-              sprite_sheet='mario.png',
+              sprite_sheet='resources/img/mario.png',
               animations={
                   Player.WALKING: Animation( Animation.Frame(100, [1*w, 0*h, w, h]),
                                              Animation.Frame(100, [2*w, 0*h, w, h]),
